@@ -25,11 +25,11 @@ jobs:
       # 冒烟测试刻意不依赖 AstrBot 运行时（见 tests/test_smoke.py 顶部注释），
       # 所以这里不装任何依赖，也就能顺便验证"无第三方依赖"这个承诺。
       - name: Run smoke tests
-        run: python tests/test_smoke.py
+        run: python3 tests/test_smoke.py
 
       - name: Verify metadata.yaml
         run: |
-          python - <<'PY'
+          python3 - <<'PY'
           import pathlib, re
 
           text = pathlib.Path("metadata.yaml").read_text(encoding="utf-8")
