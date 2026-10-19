@@ -1,0 +1,8 @@
+{
+  "title": {
+    "i18n_key": "pages.dict.title"
+  },
+  "description": {
+    "i18n_key": "pages.dict.desc"
+  }
+}

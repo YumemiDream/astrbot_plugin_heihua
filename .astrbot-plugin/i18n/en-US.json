@@ -1,0 +1,11 @@
+{
+  "metadata": {
+    "display_name": "Heihua Dictionary"
+  },
+  "pages": {
+    "dict": {
+      "title": "Heihua Dictionary",
+      "desc": "Manage jargon entries: search, add/delete, trigger mining."
+    }
+  }
+}

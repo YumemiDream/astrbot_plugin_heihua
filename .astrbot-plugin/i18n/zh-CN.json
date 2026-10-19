@@ -1,0 +1,11 @@
+{
+  "metadata": {
+    "display_name": "黑话词典"
+  },
+  "pages": {
+    "dict": {
+      "title": "黑话词典",
+      "desc": "管理黑话词条：查询、增删、触发挖掘。"
+    }
+  }
+}

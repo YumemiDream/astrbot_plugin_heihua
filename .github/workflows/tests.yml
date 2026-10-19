@@ -1,0 +1,44 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # 冒烟测试刻意不依赖 AstrBot 运行时（见 tests/test_smoke.py 顶部注释），
+      # 所以这里不装任何依赖，也就能顺便验证"无第三方依赖"这个承诺。
+      - name: Run smoke tests
+        run: python tests/test_smoke.py
+
+      - name: Verify metadata.yaml
+        run: |
+          python - <<'PY'
+          import pathlib, re
+
+          text = pathlib.Path("metadata.yaml").read_text(encoding="utf-8")
+          # 插件市场依赖这些字段，缺了会在上架时报错，提前卡住
+          for key in ("name", "display_name", "desc", "version", "author", "repo"):
+              assert re.search(rf"^{key}:\s*\S", text, re.M), f"metadata.yaml 缺少 {key}"
+
+          # name 必须和目录名一致，否则加载器找不到插件
+          name = re.search(r"^name:\s*(\S+)", text, re.M).group(1)
+          assert name == "astrbot_plugin_heihua", f"name 不符: {name}"
+          print("metadata.yaml OK")
+          PY

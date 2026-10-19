@@ -1,0 +1,62 @@
+{
+  "enable_auto_learn": {
+    "description": "📚 自动挖掘黑话",
+    "hint": "开启后，每隔一批消息用 LLM 挖掘一次群内黑话（严格门禁，宁缺毋滥）。",
+    "type": "bool",
+    "default": true
+  },
+  "enable_inject": {
+    "description": "💉 回复时注入黑话对照",
+    "hint": "用户消息命中黑话时，向 LLM 请求注入一行释义，让机器人看得懂。",
+    "type": "bool",
+    "default": true
+  },
+  "mine_interval_messages": {
+    "description": "⏱ 挖掘间隔（条）",
+    "hint": "每收集多少条新消息触发一次自动挖掘。",
+    "type": "int",
+    "default": 50
+  },
+  "mine_window": {
+    "description": "🔍 挖掘窗口（行）",
+    "hint": "每次挖掘取最近多少行聊天记录作为上下文。",
+    "type": "int",
+    "default": 60
+  },
+  "min_occurrences": {
+    "description": "🔢 入库最低出现次数",
+    "hint": "词条在窗口内至少出现多少次才考虑收录，拦掉一次性的噪音。",
+    "type": "int",
+    "default": 2
+  },
+  "max_terms_per_mine": {
+    "description": "🎯 每次最多新学词条",
+    "hint": "单次挖掘入库上限，宁缺毋滥。",
+    "type": "int",
+    "default": 5
+  },
+  "double_check": {
+    "description": "🕵️ 二次甄别",
+    "hint": "挖掘后再让 LLM 复审一遍，剔除局外人能懂的词。追求质量建议开启。",
+    "type": "bool",
+    "default": true
+  },
+  "max_inject_terms": {
+    "description": "💉 单次注入词条上限",
+    "hint": "一条消息最多注入几条释义。",
+    "type": "int",
+    "default": 5
+  },
+  "teach_admin_only": {
+    "description": "🔒 仅管理员可教",
+    "hint": "开启后「学黑话 / 黑话 词=释义」仅管理员可用。",
+    "type": "bool",
+    "default": false
+  },
+  "provider_id": {
+    "description": "🤖 LLM Provider ID",
+    "hint": "留空使用当前生效的对话模型；填写则用指定的 Provider 跑挖掘。",
+    "type": "text",
+    "default": ""
+  }
+}

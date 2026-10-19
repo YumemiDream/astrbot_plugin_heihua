@@ -1,0 +1,19 @@
+# Python 缓存
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# 测试/工具缓存
+.pytest_cache/
+.ruff_cache/
+
+# 虚拟环境
+.venv/
+venv/
+
+# IDE
+.idea/
+.vscode/
+
+# 运行时数据（词库在 AstrBot 的 plugin_data 目录，不会出现在这里）
+*.log

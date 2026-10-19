@@ -1,0 +1,34 @@
+# 插件的唯一标识名 (不要改)
+name: astrbot_plugin_heihua
+
+# 插件展示名
+display_name: 黑话词典 (Heihua)
+
+# 插件的一句话简介
+desc: 听得懂群里的黑话——严格的黑话学习 + 查询词典，局外人测试把关，一眼懂的词绝不入库。
+
+# 简短描述（插件列表展示用）
+short_desc: 严格的黑话学习 + 查询词典。
+
+# 插件的详细帮助信息或指令列表
+help: |-
+  黑话 <词> 查询释义；黑话 <词>=<释义> 教黑话
+  学黑话 <词>=<释义> ｜ 删黑话 <词> ｜ 黑话列表 [页码]
+  黑话重学 立即挖掘 ｜ 黑话开关 开关自动挖掘
+  专属管理页面：仪表盘 → 插件 → 黑话词典
+  详细说明见 README.md
+
+# 插件版本号
+version: v0.1.0
+
+# 作者名
+author: YumemiDream
+
+# 插件仓库地址（发布到插件市场需要）
+repo: https://github.com/YumemiDream/astrbot_plugin_heihua
+
+# 支持的平台（留空 = 不限制平台）
+support_platforms: []
+
+# 支持的 AstrBot 版本范围（PEP 440）
+astrbot_version: ">=4.20,<5"

@@ -1,0 +1,1362 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>黑话词典</title>
+    <style>
+      /* ---------- 设计令牌：暖中性灰 + 单一琥珀强调色 ---------- */
+      :root {
+        --bg: #faf8f5;
+        --bg-sunken: #f2eee8;
+        --surface: #ffffff;
+        --surface-hover: #fbf9f6;
+        --ink: #1c1917;
+        --ink-soft: #44403c;
+        --muted: #78716c;
+        --faint: #a8a29e;
+        --line: #e8e3db;
+        --line-strong: #d6cfc4;
+        --accent: #a16207;
+        --accent-ink: #7c4a03;
+        --accent-soft: #fdf6e7;
+        --danger: #b3261e;
+        --danger-soft: #fdf0ef;
+        --ok: #3f6212;
+        --ok-soft: #f2f7e8;
+        --radius-sm: 7px;
+        --radius-md: 11px;
+        --radius-lg: 16px;
+        --shadow-low: 0 1px 2px rgba(60, 42, 18, 0.05);
+        --shadow-high: 0 16px 40px -12px rgba(60, 42, 18, 0.22);
+        --ring: 0 0 0 3px rgba(161, 98, 7, 0.22);
+        --ease: cubic-bezier(0.32, 0.72, 0, 1);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #171512;
+          --bg-sunken: #1d1a16;
+          --surface: #201d19;
+          --surface-hover: #262218;
+          --ink: #f0ebe3;
+          --ink-soft: #d6cfc4;
+          --muted: #a8a29e;
+          --faint: #78716c;
+          --line: #322c25;
+          --line-strong: #443c33;
+          --accent: #e0a83c;
+          --accent-ink: #f2c879;
+          --accent-soft: #2a2317;
+          --danger: #f0837c;
+          --danger-soft: #2c1d1b;
+          --ok: #b6d68a;
+          --ok-soft: #232a1a;
+          --shadow-low: none;
+          --shadow-high: 0 16px 40px -12px rgba(0, 0, 0, 0.6);
+          --ring: 0 0 0 3px rgba(224, 168, 60, 0.25);
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #171512;
+        --bg-sunken: #1d1a16;
+        --surface: #201d19;
+        --surface-hover: #262218;
+        --ink: #f0ebe3;
+        --ink-soft: #d6cfc4;
+        --muted: #a8a29e;
+        --faint: #78716c;
+        --line: #322c25;
+        --line-strong: #443c33;
+        --accent: #e0a83c;
+        --accent-ink: #f2c879;
+        --accent-soft: #2a2317;
+        --danger: #f0837c;
+        --danger-soft: #2c1d1b;
+        --ok: #b6d68a;
+        --ok-soft: #232a1a;
+        --shadow-low: none;
+        --shadow-high: 0 16px 40px -12px rgba(0, 0, 0, 0.6);
+        --ring: 0 0 0 3px rgba(224, 168, 60, 0.25);
+      }
+
+      /* ---------- 基础排版 ---------- */
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        padding: 0 24px 72px;
+        background: var(--bg);
+        color: var(--ink);
+        font: 400 14px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI",
+          "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .shell { max-width: 1180px; margin: 0 auto; }
+      /* 统计数字用无衬线 + 等宽数字，避免等宽字体的斜杠零 */
+      .num { font-variant-numeric: tabular-nums; }
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+        font-variant-numeric: tabular-nums;
+      }
+      .skip {
+        position: absolute; left: -9999px; top: 8px; z-index: 100;
+        background: var(--surface); color: var(--ink); padding: 8px 14px;
+        border-radius: var(--radius-sm); border: 1px solid var(--line-strong);
+      }
+      .skip:focus { left: 24px; }
+      :focus-visible { outline: none; box-shadow: var(--ring); border-radius: var(--radius-sm); }
+
+      /* ---------- 页头 ---------- */
+      header.top { padding: 34px 0 22px; display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end; justify-content: space-between; }
+      .title { display: flex; align-items: baseline; gap: 12px; }
+      .title h1 {
+        margin: 0; font-size: 27px; font-weight: 600; letter-spacing: -0.022em;
+        line-height: 1.15; text-wrap: balance;
+      }
+      .title .mark {
+        width: 26px; height: 26px; flex: none; border-radius: 8px;
+        background: linear-gradient(150deg, var(--accent) 0%, var(--accent-ink) 100%);
+        align-self: center;
+      }
+      .tagline { color: var(--muted); font-size: 13px; max-width: 62ch; margin: 7px 0 0; text-wrap: pretty; }
+
+      /* ---------- 主题切换（跟随 / 浅色 / 深色） ---------- */
+      .theme-switch {
+        display: inline-flex; flex: none; gap: 2px; padding: 3px;
+        background: var(--bg-sunken); border: 1px solid var(--line);
+        border-radius: var(--radius-md); align-self: flex-end;
+      }
+      .theme-opt {
+        height: 28px; padding: 0 10px; font-size: 12px; gap: 6px;
+        border: 0; background: transparent; color: var(--muted);
+        border-radius: 8px; box-shadow: none;
+      }
+      .theme-opt:hover:not(:disabled) {
+        background: var(--surface); border: 0; color: var(--ink);
+      }
+      .theme-opt[aria-pressed="true"] {
+        background: var(--surface); color: var(--ink); font-weight: 500;
+        box-shadow: var(--shadow-low);
+      }
+
+      /* ---------- 页签导航 ---------- */
+      .tabs { display: flex; gap: 4px; margin: 22px 0 18px; border-bottom: 1px solid var(--line); }
+      .tab {
+        position: relative; height: auto; padding: 9px 4px 11px; margin-right: 22px;
+        background: none; border: 0; border-radius: 0; font-size: 13.5px; color: var(--muted);
+      }
+      .tab:hover:not(:disabled) { background: none; border: 0; color: var(--ink); }
+      .tab[aria-selected="true"] { color: var(--ink); font-weight: 500; }
+      .tab[aria-selected="true"]::after {
+        content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+        background: var(--accent); border-radius: 2px 2px 0 0;
+      }
+      .tab .count {
+        display: inline-block; margin-left: 7px; padding: 0 6px; border-radius: 999px;
+        background: var(--bg-sunken); color: var(--muted); font-size: 11px;
+        font-variant-numeric: tabular-nums;
+      }
+      .tab[aria-selected="true"] .count { background: var(--accent-soft); color: var(--accent-ink); }
+      .panel[hidden] { display: none; }
+
+      /* ---------- 分页 ---------- */
+      .pager {
+        display: flex; align-items: center; justify-content: space-between; gap: 14px;
+        flex-wrap: wrap; padding: 14px 2px 4px;
+      }
+      .pager .info { color: var(--muted); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+      .pager .pages { display: flex; gap: 5px; align-items: center; }
+      .pager button {
+        height: 30px; min-width: 30px; padding: 0 8px; font-size: 12.5px;
+        justify-content: center; font-variant-numeric: tabular-nums;
+      }
+      .pager button[aria-current="true"] {
+        background: var(--accent); border-color: var(--accent); color: #fff;
+      }
+      :root[data-theme="dark"] .pager button[aria-current="true"],
+      :root:not([data-theme="light"]) .pager button[aria-current="true"] { color: #201d19; }
+      @media (prefers-color-scheme: light) {
+        :root:not([data-theme="dark"]) .pager button[aria-current="true"] { color: #fff; }
+      }
+      .pager .gap { color: var(--faint); padding: 0 2px; user-select: none; }
+
+      /* ---------- 命中记录 ---------- */
+      .hits-intro {
+        margin: 0 0 14px; padding: 12px 14px; max-width: 76ch;
+        background: var(--accent-soft); border-radius: var(--radius-md);
+        color: var(--ink-soft); font-size: 12.5px; line-height: 1.7; text-wrap: pretty;
+      }
+      .hit-why { color: var(--muted); }
+      .hit-list { display: flex; flex-direction: column; gap: 0; }
+      .hit {
+        display: grid; grid-template-columns: 76px 1fr; gap: 16px;
+        padding: 14px 12px; border-bottom: 1px solid var(--line);
+        transition: background 0.15s var(--ease);
+      }
+      .hit:hover { background: var(--surface-hover); }
+      .hit:last-child { border-bottom: 0; }
+      .hit .when { color: var(--muted); font-size: 12px; white-space: nowrap; }
+      .hit .when .clock { display: block; color: var(--ink-soft); font-size: 13px; font-variant-numeric: tabular-nums; }
+      .hit .body { min-width: 0; }
+      .hit .quote {
+        color: var(--ink); font-size: 13.5px; margin-bottom: 7px;
+        overflow-wrap: anywhere; text-wrap: pretty;
+      }
+      .hit .meta { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; color: var(--muted); font-size: 12px; }
+      .hit .pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+      .pill {
+        display: inline-flex; align-items: baseline; gap: 6px; max-width: 100%;
+        background: var(--accent-soft); border-radius: 6px; padding: 3px 9px; font-size: 12px;
+      }
+      .pill b { color: var(--accent-ink); font-weight: 600; }
+      .pill span { color: var(--ink-soft); overflow-wrap: anywhere; }
+      .badge-soft {
+        display: inline-flex; align-items: center; gap: 5px;
+        background: var(--bg-sunken); border-radius: 999px; padding: 1px 9px; font-size: 11.5px;
+      }
+      .badge-soft::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--ok); }
+      .badge-proactive {
+        display: inline-flex; align-items: center; gap: 5px;
+        background: var(--accent-soft); color: var(--accent-ink);
+        border-radius: 999px; padding: 1px 9px; font-size: 11.5px; white-space: nowrap;
+      }
+      .hit-empty { padding: 52px 24px 56px; max-width: 560px; }
+      .hit-empty h2 { margin: 0 0 6px; font-size: 16px; font-weight: 600; }
+      .hit-empty p { margin: 0; color: var(--muted); font-size: 13px; }
+
+      /* ---------- 统计带（非等宽卡片） ---------- */
+      .ledger {
+        display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0 34px;
+        padding: 20px 22px; margin-bottom: 26px;
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: var(--radius-lg); box-shadow: var(--shadow-low);
+      }
+      .ledger .lead { display: flex; align-items: baseline; gap: 10px; padding-right: 34px; border-right: 1px solid var(--line); }
+      .ledger .lead .big { font-size: 40px; font-weight: 600; letter-spacing: -0.03em; line-height: 1; }
+      .ledger .lead .unit { color: var(--muted); font-size: 13px; }
+      .ledger .facet { display: flex; flex-direction: column; gap: 2px; min-width: 74px; }
+      .ledger .facet .v { font-size: 19px; font-weight: 600; letter-spacing: -0.01em; }
+      .ledger .facet .k {
+        color: var(--muted); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+      }
+      .ledger .facet .v.accented { color: var(--accent-ink); }
+
+      /* ---------- 工具栏 ---------- */
+      .toolbar {
+        display: flex; flex-wrap: wrap; gap: 9px; align-items: center; margin-bottom: 14px;
+      }
+      .field {
+        display: flex; align-items: center; gap: 7px;
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: var(--radius-md); padding: 0 11px; height: 36px;
+        transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+      }
+      .field:focus-within { border-color: var(--accent); box-shadow: var(--ring); }
+      .field svg { color: var(--faint); flex: none; }
+      .field input, .field select {
+        border: 0; background: transparent; color: var(--ink);
+        font: inherit; font-size: 13px; outline: none; height: 100%;
+      }
+      .field input { width: 210px; }
+      .field select { cursor: pointer; max-width: 220px; }
+      .spacer { flex: 1 1 auto; }
+
+      button {
+        font: inherit; font-size: 13px; height: 36px; padding: 0 15px;
+        display: inline-flex; align-items: center; gap: 7px;
+        border: 1px solid var(--line); border-radius: var(--radius-md);
+        background: var(--surface); color: var(--ink-soft); cursor: pointer;
+        transition: background 0.2s var(--ease), border-color 0.2s var(--ease),
+          color 0.2s var(--ease), transform 0.12s var(--ease);
+      }
+      button:hover:not(:disabled) { background: var(--surface-hover); border-color: var(--line-strong); color: var(--ink); }
+      button:active:not(:disabled) { transform: translateY(1px) scale(0.99); }
+      button:disabled { opacity: 0.45; cursor: not-allowed; }
+      button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+      button.primary:hover:not(:disabled) { background: var(--accent-ink); border-color: var(--accent-ink); color: #fff; }
+      /* 深色主题下强调色偏亮，主按钮改用深色字保证对比度 */
+      :root[data-theme="dark"] button.primary,
+      :root[data-theme="dark"] button.primary:hover:not(:disabled) { color: #201d19; }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) button.primary,
+        :root:not([data-theme="light"]) button.primary:hover:not(:disabled) { color: #201d19; }
+      }
+      button .dot-state {
+        width: 7px; height: 7px; border-radius: 50%; background: var(--faint); flex: none;
+      }
+      button .dot-state.on { background: var(--ok); }
+
+      /* ---------- 表格 ---------- */
+      .table-wrap { border-top: 1px solid var(--line); }
+      table { width: 100%; border-collapse: collapse; }
+      thead th {
+        position: sticky; top: 0; z-index: 2;
+        background: var(--bg);
+        background: color-mix(in srgb, var(--bg) 88%, transparent);
+        backdrop-filter: blur(10px);
+        text-align: left; font-size: 11px; font-weight: 500; letter-spacing: 0.07em;
+        text-transform: uppercase; color: var(--muted);
+        padding: 11px 12px 9px; border-bottom: 1px solid var(--line-strong);
+        white-space: nowrap;
+      }
+      tbody td { padding: 13px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+      tbody tr { transition: background 0.15s var(--ease); }
+      tbody tr:hover { background: var(--surface-hover); }
+      td.term { font-weight: 600; white-space: nowrap; letter-spacing: -0.01em; font-size: 14.5px; }
+      td.meaning { max-width: 330px; overflow-wrap: anywhere; color: var(--ink-soft); }
+      td.example { max-width: 230px; overflow-wrap: anywhere; color: var(--faint); font-size: 12.5px; }
+      td.hits .num { color: var(--ink-soft); }
+      td.updated { color: var(--faint); font-size: 12.5px; white-space: nowrap; }
+
+      th.sortable { cursor: pointer; user-select: none; transition: color 0.18s var(--ease); }
+      th.sortable:hover { color: var(--ink); }
+      th.sortable::after {
+        content: ""; display: inline-block; margin-left: 5px; opacity: 0;
+        border: 3.5px solid transparent; border-top-color: currentColor;
+        transform: translateY(2px); transition: opacity 0.18s var(--ease);
+      }
+      th.sortable[data-active="true"] { color: var(--accent-ink); }
+      th.sortable[data-active="true"]::after { opacity: 1; }
+      th.sortable[data-active="true"][data-dir="asc"]::after {
+        transform: translateY(-2px) rotate(180deg);
+      }
+
+      /* 作用域开关：开 = 全局，关 = 局部 */
+      .scope-cell { display: flex; align-items: center; gap: 9px; }
+      .switch {
+        position: relative; flex: none; width: 34px; height: 19px; padding: 0;
+        border: 1px solid var(--line-strong); border-radius: 999px;
+        background: var(--bg-sunken); cursor: pointer;
+        transition: background 0.22s var(--ease), border-color 0.22s var(--ease);
+      }
+      .switch::after {
+        content: ""; position: absolute; top: 2px; left: 2px;
+        width: 13px; height: 13px; border-radius: 50%;
+        background: var(--surface);
+        box-shadow: 0 1px 2px rgba(28, 25, 23, 0.35);
+        transition: transform 0.22s var(--ease), background 0.22s var(--ease);
+      }
+      .switch[aria-checked="true"] { background: var(--accent); border-color: var(--accent); }
+      .switch[aria-checked="true"]::after { transform: translateX(15px); background: #fff; }
+      .switch:disabled { opacity: 0.4; cursor: not-allowed; }
+      .switch:hover:not(:disabled) { border-color: var(--accent); }
+      .scope-text { font-size: 12px; white-space: nowrap; }
+      .scope-text[data-kind="global"] { color: var(--accent-ink); font-weight: 500; }
+      .scope-text[data-kind="group"] { color: var(--muted); }
+
+      /* 来源标签保持中性，避免与作用域按钮抢强调色 */
+      .src {
+        display: inline-flex; align-items: center; gap: 6px;
+        font-size: 11.5px; color: var(--muted); white-space: nowrap;
+      }
+      .src::before {
+        content: ""; width: 6px; height: 6px; border-radius: 50%;
+        background: var(--faint); flex: none;
+      }
+      .src.mined::before { background: var(--ok); }
+      .src.legacy::before { background: var(--accent-ink); }
+
+      .acts { display: flex; gap: 12px; align-items: center; white-space: nowrap; }
+      .act {
+        background: none; border: 0; padding: 0; height: auto; font-size: 12.5px;
+        color: var(--muted); cursor: pointer; transition: color 0.18s var(--ease);
+      }
+      .act:hover:not(:disabled) { color: var(--accent-ink); background: none; border: 0; }
+      .act.danger:hover:not(:disabled) { color: var(--danger); }
+      .act.confirming { color: var(--danger); font-weight: 600; }
+
+      /* 骨架屏 */
+      .skel-row td { padding: 15px 12px; }
+      .skel {
+        height: 11px; border-radius: 6px;
+        background: linear-gradient(90deg, var(--bg-sunken) 25%, var(--line) 37%, var(--bg-sunken) 63%);
+        background-size: 400% 100%; animation: shimmer 1.4s ease-in-out infinite;
+      }
+      @keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+
+      /* 空状态 */
+      .empty { padding: 58px 24px 62px; text-align: left; max-width: 520px; }
+      .empty h2 { margin: 0 0 6px; font-size: 17px; font-weight: 600; letter-spacing: -0.015em; }
+      .empty p { margin: 0 0 18px; color: var(--muted); font-size: 13px; }
+      .empty .row { display: flex; gap: 9px; flex-wrap: wrap; }
+      .empty code {
+        background: var(--bg-sunken); border-radius: 5px; padding: 1px 6px;
+        font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--ink-soft);
+      }
+
+      /* ---------- 对话框 ---------- */
+      .mask {
+        position: fixed; inset: 0; z-index: 60; display: none;
+        align-items: center; justify-content: center;
+        background: color-mix(in srgb, #1c1917 52%, transparent);
+        backdrop-filter: blur(3px); padding: 20px;
+      }
+      .mask.open { display: flex; animation: fade 0.18s var(--ease); }
+      @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+      .dialog {
+        width: min(460px, 100%); background: var(--surface); color: var(--ink);
+        border: 1px solid var(--line); border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-high); padding: 22px;
+        animation: rise 0.24s var(--ease);
+      }
+      @keyframes rise { from { opacity: 0; transform: translateY(10px) scale(0.99); } to { opacity: 1; transform: none; } }
+      .dialog h3 { margin: 0 0 4px; font-size: 16px; font-weight: 600; letter-spacing: -0.015em; }
+      .dialog .hint { color: var(--muted); font-size: 12.5px; margin: 0 0 16px; text-wrap: pretty; }
+      .field-block { margin-bottom: 13px; }
+      .field-block label {
+        display: block; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase;
+        color: var(--muted); margin-bottom: 5px;
+      }
+      .field-block input, .field-block textarea, .field-block select {
+        width: 100%; background: var(--bg); color: var(--ink);
+        border: 1px solid var(--line); border-radius: var(--radius-sm);
+        padding: 9px 11px; font: inherit; font-size: 13px; outline: none;
+        transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+      }
+      .field-block select {
+        appearance: none; -webkit-appearance: none; cursor: pointer;
+        padding-right: 34px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16' fill='none' stroke='%2378716c' stroke-width='1.8'%3E%3Cpath d='M4 6.5 8 10.5l4-4'/%3E%3C/svg%3E");
+        background-repeat: no-repeat; background-position: right 12px center;
+      }
+      .field-block input:focus, .field-block textarea:focus, .field-block select:focus { border-color: var(--accent); box-shadow: var(--ring); }
+      .field-block textarea { resize: vertical; min-height: 62px; line-height: 1.55; }
+      .field-block input:disabled { color: var(--muted); background: var(--bg-sunken); }
+      .dialog .actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 20px; }
+
+      .pick { display: flex; flex-direction: column; gap: 7px; max-height: 260px; overflow: auto; }
+      .pick label {
+        display: flex; justify-content: space-between; align-items: center; gap: 12px;
+        border: 1px solid var(--line); border-radius: var(--radius-md);
+        padding: 10px 13px; cursor: pointer; font-size: 13px;
+        transition: border-color 0.18s var(--ease), background 0.18s var(--ease);
+      }
+      .pick label:hover { border-color: var(--line-strong); background: var(--surface-hover); }
+      .pick label:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+      .pick label:has(input:disabled) { opacity: 0.5; cursor: not-allowed; }
+      .pick .meta { color: var(--muted); font-size: 12px; }
+
+      /* ---------- 提示条 ---------- */
+      #toast {
+        position: fixed; left: 50%; bottom: 30px; z-index: 90;
+        transform: translate(-50%, 14px); opacity: 0; pointer-events: none;
+        max-width: min(560px, 88vw); display: flex; align-items: center; gap: 14px;
+        background: var(--ink); color: var(--bg);
+        padding: 11px 18px; border-radius: var(--radius-md);
+        font-size: 13px; box-shadow: var(--shadow-high);
+        transition: opacity 0.22s var(--ease), transform 0.22s var(--ease);
+      }
+      #toast.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+      #toast button {
+        height: auto; padding: 3px 10px; font-size: 12.5px; flex: none;
+        background: transparent; border: 1px solid color-mix(in srgb, var(--bg) 45%, transparent);
+        color: var(--bg);
+      }
+      #toast button:hover:not(:disabled) {
+        background: color-mix(in srgb, var(--bg) 14%, transparent);
+        border-color: var(--bg); color: var(--bg);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        html { scroll-behavior: auto; }
+      }
+      @media (max-width: 720px) {
+        body { padding: 0 15px 60px; }
+        .ledger { gap: 0 22px; padding: 16px; }
+        .ledger .lead { border-right: 0; padding-right: 0; }
+        .field input { width: 130px; }
+        td.example, thead th:nth-child(3) { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip" href="#dict">跳到词典</a>
+    <div class="shell">
+      <header class="top">
+        <div>
+          <div class="title">
+            <span class="mark" aria-hidden="true"></span>
+            <h1>黑话词典</h1>
+          </div>
+          <p class="tagline">
+            只收局外人看不懂的词。人工录入优先，自动挖掘永不覆盖。
+          </p>
+        </div>
+        <div class="theme-switch" role="group" aria-label="配色主题">
+          <button class="theme-opt" data-theme-opt="auto" title="跟随 AstrBot 仪表盘的主题">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M8 2.2v1.6M8 12.2v1.6M2.2 8h1.6M12.2 8h1.6M4.1 4.1l1.1 1.1M10.8 10.8l1.1 1.1M11.9 4.1l-1.1 1.1M5.2 10.8l-1.1 1.1"/><circle cx="8" cy="8" r="2.4"/></svg>
+            跟随
+          </button>
+          <button class="theme-opt" data-theme-opt="light" title="始终使用浅色">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="8" cy="8" r="3.4"/><path d="M8 1.6v1.5M8 12.9v1.5M1.6 8h1.5M12.9 8h1.5M3.5 3.5l1 1M11.5 11.5l1 1M12.5 3.5l-1 1M4.5 11.5l-1 1"/></svg>
+            浅色
+          </button>
+          <button class="theme-opt" data-theme-opt="dark" title="始终使用深色">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M13.2 9.6A5.4 5.4 0 0 1 6.4 2.8a5.4 5.4 0 1 0 6.8 6.8z"/></svg>
+            深色
+          </button>
+        </div>
+      </header>
+
+      <section class="ledger" aria-label="词典统计">
+        <div class="lead">
+          <span class="big num" id="st-total">–</span>
+          <span class="unit">词条</span>
+        </div>
+        <div class="facet"><span class="v num" id="st-manual">–</span><span class="k">人工</span></div>
+        <div class="facet"><span class="v num" id="st-mined">–</span><span class="k">自动学习</span></div>
+        <div class="facet"><span class="v num accented" id="st-global">–</span><span class="k">全局生效</span></div>
+        <div class="facet"><span class="v num" id="st-groups">–</span><span class="k">群词库</span></div>
+        <div class="facet"><span class="v num" id="st-hits">–</span><span class="k">累计命中</span></div>
+      </section>
+
+      <nav class="tabs" role="tablist" aria-label="页面切换">
+        <button class="tab" id="tab-dict" role="tab" aria-selected="true" aria-controls="panel-dict">词典</button>
+        <button class="tab" id="tab-hits" role="tab" aria-selected="false" aria-controls="panel-hits">
+          命中记录<span class="count" id="hits-count">0</span>
+        </button>
+      </nav>
+
+      <section class="panel" id="panel-dict" role="tabpanel" aria-labelledby="tab-dict">
+      <div class="toolbar">
+        <label class="field">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="7" r="4.2"/><path d="M10.2 10.2 14 14"/></svg>
+          <input type="text" id="keyword" placeholder="搜索词条或释义" aria-label="搜索词条" />
+        </label>
+        <label class="field">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 4h12M4 8h8M6.5 12h3"/></svg>
+          <select id="scope-filter" aria-label="按作用域筛选"></select>
+        </label>
+        <label class="field">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 3v10M4 13l-2-2M4 13l2-2M12 13V3M12 3l-2 2M12 3l2 2"/></svg>
+          <select id="sort-key" aria-label="排序方式">
+            <option value="hits">按命中次数</option>
+            <option value="updated">按更新时间</option>
+            <option value="created">按添加时间</option>
+            <option value="term">按词条名称</option>
+          </select>
+        </label>
+        <button id="btn-sort-dir" title="切换升序/降序" aria-label="切换排序方向">
+          <span id="sort-dir-icon">↓</span><span id="sort-dir-label">降序</span>
+        </button>
+        <button class="primary" id="btn-add">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>
+          新增词条
+        </button>
+        <button id="btn-mine">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M8 2v4M8 10v4M2 8h4M10 8h4"/></svg>
+          立即挖掘
+        </button>
+        <span class="spacer"></span>
+        <button id="btn-toggle" title="开关自动挖掘"><span class="dot-state" id="dot-state"></span><span id="toggle-label">自动挖掘</span></button>
+        <button id="btn-export">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M8 2v8M5 7l3 3 3-3M3 13h10"/></svg>
+          导出
+        </button>
+      </div>
+
+      <section class="table-wrap" id="dict">
+        <table>          <thead>
+            <tr>
+              <th scope="col">词条</th>
+              <th scope="col">释义</th>
+              <th scope="col">例句</th>
+              <th scope="col">生效范围</th>
+              <th scope="col">来源</th>
+              <th scope="col" class="sortable" data-sort="hits" title="点击按命中次数排序">命中</th>
+              <th scope="col" class="sortable" data-sort="updated" title="点击按更新时间排序">更新</th>
+              <th scope="col">操作</th>
+            </tr>
+          </thead>
+          <tbody id="rows">
+            <tr class="skel-row"><td><div class="skel" style="width:64px"></div></td><td><div class="skel" style="width:88%"></div></td><td><div class="skel" style="width:70%"></div></td><td><div class="skel" style="width:56px"></div></td><td><div class="skel" style="width:40px"></div></td><td><div class="skel" style="width:24px"></div></td><td><div class="skel" style="width:52px"></div></td><td><div class="skel" style="width:64px"></div></td></tr>
+            <tr class="skel-row"><td><div class="skel" style="width:52px"></div></td><td><div class="skel" style="width:74%"></div></td><td><div class="skel" style="width:60%"></div></td><td><div class="skel" style="width:56px"></div></td><td><div class="skel" style="width:40px"></div></td><td><div class="skel" style="width:24px"></div></td><td><div class="skel" style="width:52px"></div></td><td><div class="skel" style="width:64px"></div></td></tr>
+            <tr class="skel-row"><td><div class="skel" style="width:70px"></div></td><td><div class="skel" style="width:82%"></div></td><td><div class="skel" style="width:52%"></div></td><td><div class="skel" style="width:56px"></div></td><td><div class="skel" style="width:40px"></div></td><td><div class="skel" style="width:24px"></div></td><td><div class="skel" style="width:52px"></div></td><td><div class="skel" style="width:64px"></div></td></tr>
+          </tbody>
+        </table>
+        <div class="empty" id="empty" style="display:none">
+          <h2 id="empty-title">词典还是空的</h2>
+          <p id="empty-copy">
+            自动挖掘只收「局外人不看懂」的词，所以经常空手而归——想要什么直接教它更快。
+            在群里发 <code>ds 黑话 词=释义</code>，或者在这里新增。
+          </p>
+          <div class="row">
+            <button class="primary" id="empty-add">新增词条</button>
+            <button id="empty-mine">选个群挖掘</button>
+          </div>
+        </div>
+        <div class="empty" id="no-result" style="display:none">
+          <h2>没有匹配的词条</h2>
+          <p>换个关键词，或把顶部的作用域筛选调回「全部作用域」。</p>
+        </div>
+        <div class="pager" id="pager" style="display:none">
+          <span class="info" id="pager-info"></span>
+          <span class="pages" id="pager-pages"></span>
+        </div>
+      </section>
+      </section>
+
+      <section class="panel" id="panel-hits" role="tabpanel" aria-labelledby="tab-hits" hidden>
+        <p class="hits-intro">
+          下面这些是 bot <b>真的准备调用大模型</b>时留下的记录——那次请求的输入里出现了这些词，
+          所以 bot 查了词典才知道它们在群里是什么意思。
+          <br />
+          只有被 @ 或 <code>ds</code> 唤醒的对话才会有记录。群友顺着聊天说话、或者由其它插件
+          自己发起的主动发言，都不经过这条路径，因此不会出现在下面。
+        </p>
+        <div class="toolbar">
+          <span class="info" style="color:var(--muted);font-size:12.5px" id="hits-summary"></span>
+          <span class="spacer"></span>
+          <button id="btn-hits-clear" title="清空全部命中记录">清空记录</button>
+        </div>
+        <div class="hit-list" id="hit-list"></div>
+        <div class="hit-empty" id="hits-empty" style="display:none">
+          <h2>还没有命中记录</h2>
+          <p>
+            等 bot 被唤醒并回复、且输入里出现了词典中的词，这里就会出现记录：
+            谁在哪个群、哪句话、bot 因此看懂了哪几个词。最多保留最近 30 次。
+          </p>
+        </div>
+      </section>
+    </div>
+
+    <!-- 新增 / 编辑 -->
+    <div class="mask" id="edit-mask" role="dialog" aria-modal="true" aria-labelledby="edit-title">
+      <div class="dialog">
+        <h3 id="edit-title">新增词条</h3>
+        <p class="hint" id="edit-hint">释义写一句话说清就行，一句话说不清说明这个词还没理解透。</p>
+        <div class="field-block" id="scope-block">
+          <label for="edit-scope">作用域</label>
+          <select id="edit-scope"></select>
+        </div>
+        <div class="field-block">
+          <label for="edit-term">词条</label>
+          <input type="text" id="edit-term" maxlength="16" placeholder="抛瓦" autocomplete="off" />
+        </div>
+        <div class="field-block">
+          <label for="edit-meaning">释义</label>
+          <textarea id="edit-meaning" maxlength="100" placeholder="power 的谐音，指实力、火力"></textarea>
+        </div>
+        <div class="field-block">
+          <label for="edit-example">例句（可选）</label>
+          <input type="text" id="edit-example" maxlength="120" placeholder="你这抛瓦不够啊" autocomplete="off" />
+        </div>
+        <div class="actions">
+          <button id="edit-cancel">取消</button>
+          <button class="primary" id="edit-save">保存</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 立即挖掘 -->
+    <div class="mask" id="mine-mask" role="dialog" aria-modal="true" aria-labelledby="mine-title">
+      <div class="dialog">
+        <h3 id="mine-title">从哪个群挖掘</h3>
+        <p class="hint">用该群最近的聊天采样跑一次挖掘。采样满 12 条才能开始。</p>
+        <div class="pick" id="mine-scopes"></div>
+        <div class="actions">
+          <button id="mine-cancel">取消</button>
+          <button class="primary" id="mine-run">开始挖掘</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 全局 → 局部：需要指定落到哪个群 -->
+    <div class="mask" id="group-mask" role="dialog" aria-modal="true" aria-labelledby="group-title">
+      <div class="dialog">
+        <h3 id="group-title">设为局部</h3>
+        <p class="hint" id="group-hint">这条词条还没记录所属群，选一个群作为它生效的范围。</p>
+        <div class="pick" id="group-pick"></div>
+        <div class="actions">
+          <button id="group-cancel">取消</button>
+          <button class="primary" id="group-run">设为局部</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module">
+      const bridge = window.AstrBotPluginPage;
+      const $ = (id) => document.getElementById(id);
+      let entries = [];
+      let overview = null;
+      let editing = null;
+      let confirming = null;
+      let page = 1;
+      const PAGE_SIZE = 20;
+      let hits = [];
+      let activeTab = "dict";
+      // 主题：auto=跟随仪表盘，light/dark=固定。
+      // 偏好存后端（页面在沙箱 iframe 里 localStorage 不可用），localStorage 仅作快速路径。
+      const THEME_KEY = "heihua.theme";
+      let themeMode = "auto";
+      let dashboardIsDark = false;
+      let sortKey = "hits";
+      let sortDir = "desc";
+
+      function applyTheme() {
+        const root = document.documentElement;
+        const useDark =
+          themeMode === "dark" || (themeMode === "auto" && dashboardIsDark);
+        root.setAttribute("data-theme", useDark ? "dark" : "light");
+        root.style.colorScheme = useDark ? "dark" : "light";
+        document.querySelectorAll("[data-theme-opt]").forEach((b) => {
+          b.setAttribute("aria-pressed", String(b.dataset.themeOpt === themeMode));
+        });
+      }
+
+      function savePrefs(patch) {
+        // 后端是权威存储；localStorage 能写就顺手写一份，减少首屏抖动
+        if (bridge && bridge.apiPost) {
+          bridge.apiPost("ui_prefs/save", { prefs: patch }).catch(() => {});
+        }
+        if (patch.theme) {
+          try {
+            localStorage.setItem(THEME_KEY, patch.theme);
+          } catch (_) {
+            /* 沙箱禁用，忽略 */
+          }
+        }
+      }
+
+      function setThemeMode(mode, persist = true) {
+        themeMode = mode;
+        applyTheme();
+        if (persist) savePrefs({ theme: mode });
+      }
+
+      function initTheme() {
+        try {
+          const saved = localStorage.getItem(THEME_KEY);
+          if (saved === "light" || saved === "dark" || saved === "auto") themeMode = saved;
+        } catch (_) {
+          /* 沙箱里不可用，等后端偏好 */
+        }
+        if (themeMode === "auto" && window.matchMedia) {
+          dashboardIsDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        }
+        applyTheme();
+      }
+
+      async function loadPrefs() {
+        try {
+          const prefs = unwrap(await bridge.apiGet("ui_prefs")).prefs || {};
+          if (prefs.theme) setThemeMode(prefs.theme, false);
+          if (prefs.sort) sortKey = prefs.sort;
+          if (prefs.sort_dir) sortDir = prefs.sort_dir;
+        } catch (_) {
+          /* 读不到就用默认值 */
+        }
+      }
+
+      const unwrap = (r) => (r && r.data !== undefined ? r.data : r) || {};
+      const esc = (s) =>
+        String(s ?? "").replace(/[&<>"']/g, (c) =>
+          ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+      const fmtDate = (ts) => {
+        if (!ts) return "–";
+        const d = new Date(ts * 1000);
+        const days = Math.floor((Date.now() - d.getTime()) / 86400000);
+        if (days === 0) return "今天";
+        if (days === 1) return "昨天";
+        if (days < 30) return `${days} 天前`;
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      };
+      const srcLabel = (src) => ({ mined: "学习", global: "全局", legacy: "旧库" }[src] || "手动");
+
+      let toastTimer = null;
+      let undoAction = null;
+      function toast(msg, undo) {
+        const el = $("toast");
+        el.textContent = msg;
+        undoAction = undo || null;
+        if (undoAction) {
+          const btn = document.createElement("button");
+          btn.textContent = "撤销";
+          btn.id = "toast-undo";
+          btn.addEventListener("click", async () => {
+            const act = undoAction;
+            undoAction = null;
+            el.classList.remove("show");
+            if (act) await act();
+          });
+          el.appendChild(btn);
+        }
+        el.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => el.classList.remove("show"), undo ? 6000 : 3200);
+      }
+
+      function renderStats() {
+        const s = overview?.stats || {};
+        $("st-total").textContent = s.total ?? "–";
+        $("st-manual").textContent = s.manual ?? "–";
+        $("st-mined").textContent = s.mined ?? "–";
+        $("st-global").textContent = s.global ?? "–";
+        $("st-groups").textContent = s.groups ?? "–";
+        $("st-hits").textContent = s.hits ?? "–";
+        const on = !!overview?.auto_learn;
+        $("dot-state").classList.toggle("on", on);
+        $("toggle-label").textContent = on ? "自动挖掘已开" : "自动挖掘已关";
+      }
+
+      function groupScopes() {
+        const groups = new Set(Object.keys(overview?.groups || {}));
+        entries.forEach((e) => e.scope !== "global" && groups.add(e.scope));
+        return [...groups].sort();
+      }
+
+      function renderFilters() {
+        const sel = $("scope-filter");
+        const cur = sel.value;
+        sel.innerHTML =
+          `<option value="">全部作用域</option><option value="global">仅全局词条</option>` +
+          groupScopes().map((g) => `<option value="${esc(g)}">群 ${esc(g)}</option>`).join("");
+        sel.value = cur;
+        const groups = groupScopes();
+        $("edit-scope").innerHTML =
+          `<option value="global">全局（所有群和私聊）</option>` +
+          groups.map((g) => `<option value="${esc(g)}">仅群 ${esc(g)}</option>`).join("");
+      }
+
+      function currentGroupContext() {
+        const picked = $("scope-filter").value;
+        if (picked && picked !== "global") return picked;
+        const groups = groupScopes();
+        return groups.length === 1 ? groups[0] : "";
+      }
+
+      function scopeCell(e) {
+        const isGlobal = e.scope === "global";
+        const home = e.home_scope || "";
+        // 关掉开关要回到哪个群：老家的群 > 唯一存在的群 > 顶部筛选选中的群
+        const fallback = home || currentGroupContext() || (groupScopes().length === 1 ? groupScopes()[0] : "");
+        const canOff = isGlobal ? !!fallback : true;
+        const title = isGlobal
+          ? fallback
+            ? `全局生效中——点击改为仅「${fallback}」`
+            : "全局生效中——点击改为仅本群（还没有群词库，先去群里教一条）"
+          : `仅在「${e.scope}」生效——点击改为全局`;
+        return `<div class="scope-cell">
+          <button class="switch" role="switch" aria-checked="${isGlobal}"
+            data-act="toggle-scope" data-scope="${esc(e.scope)}" data-term="${esc(e.term)}"
+            data-home="${esc(fallback)}" title="${esc(title)}"
+            aria-label="${esc(title)}" ${canOff ? "" : "disabled"}></button>
+          <span class="scope-text" data-kind="${isGlobal ? "global" : "group"}">${isGlobal ? "全局" : "局部"}</span>
+        </div>`;
+      }
+
+      function sortEntries(list) {
+        const dir = sortDir === "asc" ? 1 : -1;
+        const key = sortKey;
+        // 中文按拼音/笔画排序依赖 localeCompare，比直接比码点自然
+        const cmp = {
+          hits: (a, b) => (a.hits ?? 0) - (b.hits ?? 0),
+          updated: (a, b) => (a.updated_at ?? 0) - (b.updated_at ?? 0),
+          created: (a, b) => (a.created_at ?? 0) - (b.created_at ?? 0),
+          term: (a, b) => String(a.term || "").localeCompare(String(b.term || ""), "zh"),
+        }[key] || ((a, b) => (a.hits ?? 0) - (b.hits ?? 0));
+        // 主排序相等时用词条名兜底，保证顺序稳定
+        return [...list].sort((a, b) => {
+          const r = cmp(a, b);
+          if (r !== 0) return r * dir;
+          return String(a.term || "").localeCompare(String(b.term || ""), "zh") * dir;
+        });
+      }
+
+      function renderSortControls() {
+        $("sort-key").value = sortKey;
+        const asc = sortDir === "asc";
+        $("sort-dir-icon").textContent = asc ? "↑" : "↓";
+        $("sort-dir-label").textContent = asc ? "升序" : "降序";
+        $("btn-sort-dir").setAttribute("aria-label", asc ? "当前升序，点击改降序" : "当前降序，点击改升序");
+        document.querySelectorAll("th.sortable").forEach((th) => {
+          const on = th.dataset.sort === sortKey;
+          th.dataset.active = String(on);
+          th.dataset.dir = sortDir;
+        });
+      }
+
+      function setSort(key, dir, persist = true) {
+        sortKey = key;
+        if (dir) sortDir = dir;
+        page = 1;
+        renderSortControls();
+        renderRows();
+        if (persist) savePrefs({ sort: sortKey, sort_dir: sortDir });
+      }
+
+      function renderRows() {
+        const kw = $("keyword").value.trim().toLowerCase();
+        const scope = $("scope-filter").value;
+        const filtered = entries.filter((e) => {
+          if (scope && e.scope !== scope) return false;
+          if (!kw) return true;
+          return (
+            e.term.toLowerCase().includes(kw) ||
+            (e.meaning || "").toLowerCase().includes(kw) ||
+            (e.example || "").toLowerCase().includes(kw)
+          );
+        });
+        const list = sortEntries(filtered);
+
+        $("empty").style.display = entries.length ? "none" : "block";
+        $("no-result").style.display = !entries.length || list.length ? "none" : "block";
+
+        // 分页：词条会越攒越多，按 PAGE_SIZE 切页
+        const totalPages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+        if (page > totalPages) page = totalPages;
+        if (page < 1) page = 1;
+        const start = (page - 1) * PAGE_SIZE;
+        const slice = list.slice(start, start + PAGE_SIZE);
+
+        $("rows").innerHTML = slice
+          .map(
+            (e) => `
+          <tr>
+            <td class="term">${esc(e.term)}</td>
+            <td class="meaning">${esc(e.meaning)}</td>
+            <td class="example">${esc(e.example || "–")}</td>
+            <td>${scopeCell(e)}</td>
+            <td><span class="src ${esc(e.source || "")}">${esc(srcLabel(e.source))}</span></td>
+            <td class="hits"><span class="num">${esc(e.hits ?? 0)}</span></td>
+            <td class="updated">${fmtDate(e.updated_at)}</td>
+            <td>
+              <div class="acts">
+                <button class="act" data-act="edit" data-scope="${esc(e.scope)}" data-term="${esc(e.term)}">编辑</button>
+                <button class="act danger${confirming === e.scope + "|" + e.term ? " confirming" : ""}"
+                  data-act="del" data-scope="${esc(e.scope)}" data-term="${esc(e.term)}">
+                  ${confirming === e.scope + "|" + e.term ? "确认删除" : "删除"}
+                </button>
+              </div>
+            </td>
+          </tr>`
+          )
+          .join("");
+
+        renderPager(list.length, totalPages, start, slice.length);
+      }
+
+      function renderPager(total, totalPages, start, shown) {
+        const pager = $("pager");
+        if (total <= PAGE_SIZE) {
+          pager.style.display = "none";
+          return;
+        }
+        pager.style.display = "flex";
+        $("pager-info").textContent = `第 ${start + 1}–${start + shown} 条，共 ${total} 条`;
+        $("pager-pages").innerHTML = pageButtons(totalPages);
+      }
+
+      function pageButtons(totalPages) {
+        // 页数多时折叠：1 … 4 5 6 … 20
+        const nums = new Set([1, totalPages, page, page - 1, page + 1]);
+        const list = [...nums].filter((n) => n >= 1 && n <= totalPages).sort((a, b) => a - b);
+        const out = [];
+        let prev = 0;
+        for (const n of list) {
+          if (prev && n - prev > 1) out.push('<span class="gap">…</span>');
+          out.push(
+            `<button data-page="${n}" aria-current="${n === page}" aria-label="第 ${n} 页">${n}</button>`
+          );
+          prev = n;
+        }
+        return (
+          `<button data-page="${page - 1}" ${page <= 1 ? "disabled" : ""} aria-label="上一页">‹</button>` +
+          out.join("") +
+          `<button data-page="${page + 1}" ${page >= totalPages ? "disabled" : ""} aria-label="下一页">›</button>`
+        );
+      }
+
+      async function refresh() {
+        try {
+          const [ov, en, ht] = await Promise.all([
+            bridge.apiGet("overview"),
+            bridge.apiGet("entries"),
+            bridge.apiGet("hits"),
+          ]);
+          overview = unwrap(ov);
+          entries = unwrap(en).entries || [];
+          hits = unwrap(ht).records || [];
+          renderStats();
+          renderFilters();
+          renderSortControls();
+          renderRows();
+          renderHits();
+        } catch (err) {
+          $("rows").innerHTML = "";
+          toast(`加载失败：${err?.message || err}`);
+        }
+      }
+
+      function renderHits() {
+        $("hits-count").textContent = hits.length;
+        $("hits-summary").textContent = hits.length
+          ? `最近 ${hits.length} 次（最多保留 30 次，最新在上）`
+          : "";
+        $("hits-empty").style.display = hits.length ? "none" : "block";
+        $("btn-hits-clear").style.display = hits.length ? "" : "none";
+        $("hit-list").innerHTML = hits
+          .map((h) => {
+            const when = new Date((h.time || 0) * 1000);
+            const hhmm = `${String(when.getHours()).padStart(2, "0")}:${String(when.getMinutes()).padStart(2, "0")}`;
+            const day = fmtDate(h.time);
+            const isGlobal = h.scope === "global";
+            const isProactive = String(h.target || "").includes("proactive");
+            // 把技术细节翻译成人话：记录的是「谁在哪个群说了什么，bot 因此看懂了哪些词」
+            const where = isGlobal ? "私聊" : `群 ${esc(h.scope_label || h.scope || "")}`;
+            const terms = h.hits || [];
+            const pills = terms
+              .map(
+                (x) => `<span class="pill"><b>${esc(x.term)}</b><span>${esc(x.meaning || "")}</span></span>`
+              )
+              .join("");
+            return `
+            <div class="hit">
+              <div class="when"><span class="clock">${hhmm}</span>${esc(day)}</div>
+              <div class="body">
+                <div class="quote">${esc(h.message || "(无消息文本)")}</div>
+                <div class="meta">
+                  <span class="badge-soft">${where}</span>
+                  <span>${esc(h.sender || "未知")}</span>
+                  ${isProactive ? '<span class="badge-proactive">bot 主动开口时参考</span>' : ""}
+                  <span class="hit-why">bot 因此看懂了 ${terms.length} 个词：</span>
+                </div>
+                <div class="pills">${pills}</div>
+              </div>
+            </div>`;
+          })
+          .join("");
+      }
+
+      /* ---------- 新增 / 编辑 ---------- */
+      function openEdit(entry) {
+        editing = entry;
+        $("edit-title").textContent = entry ? `编辑「${entry.term}」` : "新增词条";
+        $("edit-hint").textContent = entry
+          ? "作用域用列表里的按钮切换，这里只改释义和例句。"
+          : "释义写一句话说清就行，一句话说不清说明这个词还没理解透。";
+        $("scope-block").style.display = entry ? "none" : "block";
+        $("edit-term").value = entry?.term || "";
+        $("edit-term").disabled = !!entry;
+        $("edit-meaning").value = entry?.meaning || "";
+        $("edit-example").value = entry?.example || "";
+        if (!entry) $("edit-scope").value = currentGroupContext() || "global";
+        $("edit-mask").classList.add("open");
+        setTimeout(() => (entry ? $("edit-meaning") : $("edit-term")).focus(), 60);
+      }
+      const closeEdit = () => $("edit-mask").classList.remove("open");
+
+      async function saveEntry() {
+        const body = {
+          scope: editing ? editing.scope : $("edit-scope").value,
+          term: $("edit-term").value.trim(),
+          meaning: $("edit-meaning").value.trim(),
+          example: $("edit-example").value.trim(),
+        };
+        if (!body.term) return toast("词条不能为空");
+        if (!body.meaning) return toast("释义不能为空");
+        const btn = $("edit-save");
+        btn.disabled = true;
+        try {
+          const resp = await bridge.apiPost("save", body);
+          if (resp?.status === "error") return toast(resp.message || "保存失败");
+          closeEdit();
+          toast(`已保存「${body.term}」`);
+          refresh();
+        } catch (err) {
+          toast(`保存失败：${err?.message || err}`);
+        } finally {
+          btn.disabled = false;
+        }
+      }
+
+      async function deleteEntry(scope, term) {
+        try {
+          const resp = await bridge.apiPost("delete", { scope, term });
+          if (resp?.status === "error") return toast(resp.message || "删除失败");
+          toast(`已删除「${term}」`);
+          refresh();
+        } catch (err) {
+          toast(`删除失败：${err?.message || err}`);
+        }
+      }
+
+      /* ---------- 作用域切换（行内单按钮） ---------- */
+      function openGroupPicker(term) {
+        const groups = groupScopes();
+        if (!groups.length) return toast("还没有任何群词库。先在群里教一条，或让机器人聊一会儿");
+        $("group-hint").textContent = `「${term}」改到哪个群生效？其他群将不再看到它。`;
+        $("group-pick").innerHTML = groups
+          .map(
+            (g) => `<label>
+              <span>群 ${esc(g)}</span>
+              <span class="meta num">已有 ${(overview?.groups?.[g]?.terms ?? 0)} 词</span>
+              <input type="radio" name="group-target" value="${esc(g)}" />
+            </label>`
+          )
+          .join("");
+        $("group-mask").dataset.term = term;
+        $("group-mask").classList.add("open");
+      }
+      const closeGroupPicker = () => $("group-mask").classList.remove("open");
+
+      async function doMove(term, from, to, opts = {}) {
+        try {
+          const resp = await bridge.apiPost("move", { term, from_scope: from, to_scope: to });
+          if (resp?.status === "error") return toast(resp.message || "切换失败");
+          const label = to === "global" ? "全局生效" : `仅在群 ${to} 生效`;
+          const undo = opts.undoTo
+            ? () => doMove(term, to, opts.undoTo)
+            : null;
+          toast(`「${term}」现在${label}`, undo);
+          refresh();
+        } catch (err) {
+          toast(`切换失败：${err?.message || err}`);
+        }
+      }
+
+      /* 开关即点即生效，误触由「撤销」兜底 */
+      function toggleScope(scope, term, home) {
+        // 群 → 全局
+        if (scope !== "global") return doMove(term, scope, "global", { undoTo: scope });
+        // 全局 → 群：优先回「老家」，没有记录才让用户选
+        if (home) return doMove(term, "global", home, { undoTo: "global" });
+        openGroupPicker(term);
+      }
+
+      /* ---------- 挖掘 ---------- */
+      function openMine() {
+        const groups = overview?.groups || {};
+        const keys = Object.keys(groups).sort();
+        $("mine-scopes").innerHTML = keys.length
+          ? keys
+              .map((g) => {
+                const v = groups[g];
+                const ready = (v.buffered || 0) >= 12;
+                return `<label>
+                  <span>群 ${esc(g)}</span>
+                  <span class="meta num">采样 ${v.buffered || 0} · 已有 ${v.terms || 0} 词</span>
+                  <input type="radio" name="mine-scope" value="${esc(g)}" ${ready ? "" : "disabled"} />
+                </label>`;
+              })
+              .join("")
+          : `<p class="hint" style="margin:0">还没有任何群采样。让机器人在群里正常聊一会儿就有了。</p>`;
+        $("mine-mask").classList.add("open");
+      }
+      const closeMine = () => $("mine-mask").classList.remove("open");
+
+      async function runMine() {
+        const picked = document.querySelector('input[name="mine-scope"]:checked');
+        if (!picked) return toast("请选择一个群");
+        const btn = $("mine-run");
+        btn.disabled = true;
+        const before = btn.textContent;
+        btn.textContent = "挖掘中…";
+        try {
+          const resp = await bridge.apiPost("mine", { scope: picked.value });
+          if (resp?.status === "error") {
+            toast(resp.message || "挖掘失败");
+          } else {
+            const learned = resp?.data?.learned || [];
+            toast(
+              learned.length
+                ? `新学 ${learned.length} 条：${learned.map((t) => `「${t}」`).join("、")}`
+                : "没挖到合格的黑话。这是常态——拿不准的宁可不收"
+            );
+            closeMine();
+            refresh();
+          }
+        } catch (err) {
+          toast(`挖掘失败：${err?.message || err}`);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = before;
+        }
+      }
+
+      /* ---------- 事件绑定 ---------- */
+      document.querySelectorAll("[data-theme-opt]").forEach((btn) =>
+        btn.addEventListener("click", () => setThemeMode(btn.dataset.themeOpt))
+      );
+
+      $("btn-add").addEventListener("click", () => openEdit(null));
+      $("empty-add").addEventListener("click", () => openEdit(null));
+      $("empty-mine").addEventListener("click", openMine);
+      $("edit-cancel").addEventListener("click", closeEdit);
+      $("edit-save").addEventListener("click", saveEntry);
+      $("mine-cancel").addEventListener("click", closeMine);
+      $("mine-run").addEventListener("click", runMine);
+      $("group-cancel").addEventListener("click", closeGroupPicker);
+      $("group-run").addEventListener("click", () => {
+        const picked = document.querySelector('input[name="group-target"]:checked');
+        if (!picked) return toast("请选择一个群");
+        const term = $("group-mask").dataset.term;
+        closeGroupPicker();
+        doMove(term, "global", picked.value);
+      });
+      $("keyword").addEventListener("input", () => {
+        page = 1;
+        renderRows();
+      });
+      $("scope-filter").addEventListener("change", () => {
+        page = 1;
+        renderRows();
+      });
+
+      /* ---------- 页签 ---------- */
+      function switchTab(tab) {
+        activeTab = tab;
+        const isDict = tab === "dict";
+        $("tab-dict").setAttribute("aria-selected", String(isDict));
+        $("tab-hits").setAttribute("aria-selected", String(!isDict));
+        $("panel-dict").hidden = !isDict;
+        $("panel-hits").hidden = isDict;
+        if (!isDict) {
+          renderHits();
+          // 记录是随着聊天实时产生的，切过来时顺手拉一次最新的
+          bridge
+            .apiGet("hits")
+            .then((r) => {
+              hits = unwrap(r).records || [];
+              renderHits();
+            })
+            .catch(() => {});
+        }
+      }
+      $("tab-dict").addEventListener("click", () => switchTab("dict"));
+      $("tab-hits").addEventListener("click", () => switchTab("hits"));
+
+      /* ---------- 排序 ---------- */
+      $("sort-key").addEventListener("change", () => setSort($("sort-key").value));
+      $("btn-sort-dir").addEventListener("click", () =>
+        setSort(sortKey, sortDir === "asc" ? "desc" : "asc")
+      );
+      document.querySelectorAll("th.sortable").forEach((th) =>
+        th.addEventListener("click", () => {
+          const key = th.dataset.sort;
+          // 再点同一列就翻转方向
+          setSort(key, key === sortKey ? (sortDir === "asc" ? "desc" : "asc") : "desc");
+        })
+      );
+
+      /* ---------- 分页 ---------- */
+      $("pager-pages").addEventListener("click", (ev) => {
+        const btn = ev.target.closest("[data-page]");
+        if (!btn || btn.disabled) return;
+        page = parseInt(btn.dataset.page, 10) || 1;
+        renderRows();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+
+      /* ---------- 清空命中记录 ---------- */
+      $("btn-hits-clear").addEventListener("click", async () => {
+        if (!hits.length) return toast("记录已经是空的");
+        if ($("btn-hits-clear").dataset.confirm !== "1") {
+          $("btn-hits-clear").dataset.confirm = "1";
+          $("btn-hits-clear").textContent = "确认清空";
+          setTimeout(() => {
+            if ($("btn-hits-clear").dataset.confirm === "1") {
+              $("btn-hits-clear").dataset.confirm = "0";
+              $("btn-hits-clear").textContent = "清空记录";
+            }
+          }, 3200);
+          return;
+        }
+        $("btn-hits-clear").dataset.confirm = "0";
+        $("btn-hits-clear").textContent = "清空记录";
+        try {
+          const resp = await bridge.apiPost("hits/clear", {});
+          if (resp?.status === "error") return toast(resp.message || "清空失败");
+          toast("命中记录已清空");
+          refresh();
+        } catch (err) {
+          toast(`清空失败：${err?.message || err}`);
+        }
+      });
+
+      $("btn-toggle").addEventListener("click", async () => {
+        try {
+          unwrap(await bridge.apiPost("toggle", {}));
+          refresh();
+        } catch (err) {
+          toast(`操作失败：${err?.message || err}`);
+        }
+      });
+      $("btn-export").addEventListener("click", () =>
+        bridge.download("export", {}, "heihua_jargon.json").catch((err) =>
+          toast(`导出失败：${err?.message || err}`)
+        )
+      );
+      $("btn-mine").addEventListener("click", openMine);
+
+      $("rows").addEventListener("click", (ev) => {
+        const el = ev.target.closest("[data-act]");
+        if (!el) return;
+        const { act, scope, term, home } = el.dataset;
+        if (act === "edit") {
+          openEdit(entries.find((e) => e.scope === scope && e.term === term));
+        } else if (act === "toggle-scope") {
+          toggleScope(scope, term, home);
+        } else if (act === "del") {
+          const key = scope + "|" + term;
+          if (confirming !== key) {
+            confirming = key;
+            renderRows();
+            setTimeout(() => {
+              if (confirming === key) {
+                confirming = null;
+                renderRows();
+              }
+            }, 3200);
+            return;
+          }
+          confirming = null;
+          deleteEntry(scope, term);
+        }
+      });
+
+      document.addEventListener("keydown", (ev) => {
+        if (ev.key !== "Escape") return;
+        closeEdit();
+        closeMine();
+        closeGroupPicker();
+      });
+      document.querySelectorAll(".mask").forEach((m) =>
+        m.addEventListener("click", (ev) => {
+          if (ev.target === m) {
+            closeEdit();
+            closeMine();
+            closeGroupPicker();
+          }
+        })
+      );
+
+      if (!bridge) {
+        document.body.innerHTML =
+          '<p style="padding:28px;font:14px system-ui">请从 AstrBot 仪表盘的插件页面打开此页。</p>';
+      } else {
+        initTheme();
+        // 记录仪表盘当前主题，供「跟随」模式使用
+        const ctx = await bridge.ready();
+        dashboardIsDark = !!ctx?.isDark;
+        applyTheme();
+        // 后端偏好是权威来源（沙箱 iframe 里 localStorage 不可用）
+        await loadPrefs();
+        renderSortControls();
+        if (typeof bridge.onContext === "function") {
+          bridge.onContext((next) => {
+            if (typeof next?.isDark === "boolean") {
+              dashboardIsDark = next.isDark;
+              applyTheme();
+            }
+          });
+        }
+        refresh();
+      }
+    </script>
+  </body>
+</html>
