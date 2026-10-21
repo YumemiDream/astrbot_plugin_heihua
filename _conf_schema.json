@@ -54,9 +54,10 @@
     "default": false
   },
   "provider_id": {
-    "description": "🤖 LLM Provider ID",
-    "hint": "留空使用当前生效的对话模型；填写则用指定的 Provider 跑挖掘。",
-    "type": "text",
+    "description": "🤖 挖掘用模型",
+    "hint": "留空＝跟随当前对话模型（推荐，除非你想让挖掘单独走便宜/更快的模型）。下拉里选一个则固定用它跑挖掘，不影响聊天本身用的模型。",
+    "type": "string",
+    "_special": "select_provider",
     "default": ""
   }
 }
