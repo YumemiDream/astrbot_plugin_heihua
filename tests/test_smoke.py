@@ -42,12 +42,25 @@ check("accept 雪团", term_shape_ok("雪团"))
 check("accept zako?", term_shape_ok("zako"))
 check("accept 飞船票", term_shape_ok("飞船票"))
 
+# 连词/虚词是句子骨架，不可能是黑话（曾经漏掉的整类）
+for w in ("然后", "但是", "所以", "因为", "如果", "虽然", "而且", "不过",
+          "或者", "还是", "就是", "应该", "一直", "一起"):
+    check(f"reject 连词 {w}", not term_shape_ok(w))
+# 推测词本身也不该当词条
+for w in ("可能", "我猜", "估计", "也许", "大概"):
+    check(f"reject 推测词 {w}", not term_shape_ok(w))
+
 # ---------- 释义门禁：反脑补 ----------
 check("reject 猜测", not meaning_ok("可能是指 power 的谐音"))
 check("reject typo", not meaning_ok("a typo for 22, likely a joke"))
 check("reject 超长", not meaning_ok("释" * 100))
 check("reject 空", not meaning_ok(""))
 check("accept 确定", meaning_ok("power 的谐音，指实力、火力"))
+# 以"我猜/估计/看起来"开头的猜测式释义同样要拦（曾经漏掉）
+check("reject 我猜是", not meaning_ok("我猜是某个游戏"))
+check("reject 估计是", not meaning_ok("估计是 A 的意思"))
+check("reject 看起来像", not meaning_ok("看起来像是梗"))
+check("reject 说不定", not meaning_ok("说不定是个谐音"))
 
 # ---------- 证据校验 ----------
 win = " ".join(["甲: 你这抛瓦不够啊", "乙: 抛瓦这块还得练"])
